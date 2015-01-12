@@ -78,7 +78,7 @@ namespace Microsoft.AspNet.Diagnostics
         // Assumes the response headers have not been sent.  If they have, still attempt to write to the body.
         private Task DisplayException(HttpContext context, Exception ex)
         {
-            var compilationException = ex as IRuntimeCompilationException;
+            var compilationException = ex as ICompilationException;
             if (compilationException != null)
             {
                 return DisplayCompilationException(context, ex, compilationException);
@@ -89,7 +89,7 @@ namespace Microsoft.AspNet.Diagnostics
 
         private Task DisplayCompilationException(HttpContext context,
                                                  Exception ex,
-                                                 IRuntimeCompilationException compilationException)
+                                                 ICompilationException compilationException)
         {
             var stackFrames = new List<StackFrame>();
             var model = new CompilationErrorPageModel()
@@ -102,33 +102,40 @@ namespace Microsoft.AspNet.Diagnostics
                 }
             };
 
-            var fileContent = compilationException.SourceFileContent
-                                                  .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-            foreach (var item in compilationException.Messages)
+            // For view compilation, the most common case is to stop at the first failing file compiled as part of
+            // rendering a view. Consequently we'll limit ourselves to displaying errors from the first failure.
+            var failedCompilationFile = compilationException.CompilationFailures.FirstOrDefault();
+            if (failedCompilationFile != null)
             {
-                // Convert 0-based line indexes to 1-based index that the StackFrame expects
-                var lineIndex = item.StartLine + 1;
-                var frame = new StackFrame
-                {
-                    File = compilationException.SourceFilePath,
-                    Line = lineIndex,
-                    Function = string.Empty
-                };
+                var fileContent = failedCompilationFile.SourceFileContent
+                                                       .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-                if (_options.ShowSourceCode)
+                foreach (var item in failedCompilationFile.Messages)
                 {
-                    ReadFrameContent(frame, fileContent, lineIndex, item.EndLine + 1);
-                    frame.ErrorDetails = item.Message;
+                    // Convert 0-based line indexes to 1-based index that the StackFrame expects
+                    var lineIndex = item.StartLine + 1;
+                    var frame = new StackFrame
+                    {
+                        File = failedCompilationFile.SourceFilePath,
+                        Line = lineIndex,
+                        Function = string.Empty
+                    };
+
+                    if (_options.ShowSourceCode)
+                    {
+                        ReadFrameContent(frame, fileContent, lineIndex, item.EndLine + 1);
+                        frame.ErrorDetails = item.Message;
+                    }
+
+                    stackFrames.Add(frame);
                 }
-
-                stackFrames.Add(frame);
             }
 
             var errorPage = new CompilationErrorPage
             {
                 Model = model
             };
+
             return errorPage.ExecuteAsync(context);
         }
 
