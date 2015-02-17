@@ -1,7 +1,7 @@
 ﻿@using System
 @using System.Globalization
 @using System.Linq
-@using System.Net
+@using Microsoft.Framework.DependencyInjection
 @using Views
 @functions
 {
@@ -11,8 +11,11 @@
     }
 
     public ErrorPageModel Model { get; set; }
+
+    private IHtmlEnoder _htmlEncoder;
 }
 @{
+    _htmlEncoder = Context.ApplicationServices.GetHtmlEncoder();
     Response.StatusCode = 500;
     // TODO: Response.ReasonPhrase = "Internal Server Error";
     Response.ContentType = "text/html";
@@ -34,7 +37,7 @@
         {
             foreach (var errorDetail in Model.ErrorDetails)
             {
-                <div class="titleerror">@errorDetail.Error.GetType().Name: @{ Output.Write(WebUtility.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); }</div>
+                <div class="titleerror">@errorDetail.Error.GetType().Name: @{ Output.Write(_htmlEncoder.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); }</div>
                 @{
                     StackFrame firstFrame = null;
                     firstFrame = errorDetail.StackFrames.FirstOrDefault();

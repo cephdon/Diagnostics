@@ -1,12 +1,20 @@
 using System;
 using Microsoft.AspNet.Builder;
+using Microsoft.Framework.DependencyInjection;
 
 namespace ErrorPageSample
 {
     public class Startup
     {
+        //public void ConfigureServices(IServiceCollection services)
+        //{
+        //    services.AddWebEncoders();
+        //}
+
         public void Configure(IApplicationBuilder app)
         {
+           // app.UseRequestServices();
+
             app.UseErrorPage();
             app.Run(context =>
             {

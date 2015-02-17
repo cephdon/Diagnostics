@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.WebEncoders;
 
 namespace ErrorHandlerSample
 {
@@ -9,12 +10,15 @@ namespace ErrorHandlerSample
     {
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRequestServices();
+
             // Configure the error handler to show an error page.
             app.UseErrorHandler(errorApp =>
             {
                 // Normally you'd use MVC or similar to render a nice page.
                 errorApp.Run(async context =>
                 {
+                    var htmlEncoder = context.ApplicationServices.GetHtmlEncoder();
                     context.Response.StatusCode = 500;
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync("<html><body>\r\n");
@@ -24,7 +28,7 @@ namespace ErrorHandlerSample
                     if (error != null)
                     {
                         // This error would not normally be exposed to the client
-                        await context.Response.WriteAsync("<br>Error: " + System.Net.WebUtility.HtmlEncode(error.Error.Message) + "<br>\r\n");
+                        await context.Response.WriteAsync("<br>Error: " + htmlEncoder.HtmlEncode(error.Error.Message) + "<br>\r\n");
                     }
                     await context.Response.WriteAsync("<br><a href=\"/\">Home</a><br>\r\n");
                     await context.Response.WriteAsync("</body></html>\r\n");

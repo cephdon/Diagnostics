@@ -95,7 +95,7 @@ using Views
 #line hidden
             WriteLiteral(": ");
 #line 30 "CompilationErrorPage.cshtml"
-                                                                          Output.Write(WebUtility.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); 
+                                                                          Output.Write(HtmlEncoder.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); 
 
 #line default
 #line hidden

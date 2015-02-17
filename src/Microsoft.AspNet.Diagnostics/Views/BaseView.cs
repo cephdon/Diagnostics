@@ -5,9 +5,9 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics.Views
 {
@@ -37,6 +37,11 @@ namespace Microsoft.AspNet.Diagnostics.Views
         protected StreamWriter Output { get; private set; }
 
         /// <summary>
+        /// Html encoder used to encode content.
+        /// </summary>
+        protected IHtmlEncoder HtmlEncoder { get; set; }
+
+        /// <summary>
         /// Execute an individual request
         /// </summary>
         /// <param name="context"></param>
@@ -46,6 +51,7 @@ namespace Microsoft.AspNet.Diagnostics.Views
             Request = Context.Request;
             Response = Context.Response;
             Output = new StreamWriter(Response.Body);
+            HtmlEncoder = context.ApplicationServices.GetHtmlEncoder();
             await ExecuteAsync();
             Output.Dispose();
         }
@@ -217,7 +223,7 @@ namespace Microsoft.AspNet.Diagnostics.Views
         /// <param name="value">The <see cref="string"/> to write.</param>
         protected void WriteTo(TextWriter writer, string value)
         {
-            WriteLiteralTo(writer, WebUtility.HtmlEncode(value));
+            WriteLiteralTo(writer, HtmlEncoder.HtmlEncode(value));
         }
 
         /// <summary>

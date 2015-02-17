@@ -1,13 +1,18 @@
 ﻿@using System
 @using System.Globalization
 @using System.Linq
-@using System.Net
+@using Microsoft.Framework.DependencyInjection
+@using Microsoft.AspNet.WebUtilities.Encoders
 @using Views
 @functions
 {
     public CompilationErrorPageModel Model { get; set; }
+
+    private IHtmlEnoder _htmlEncoder;
 }
 @{
+    _htmlEncoder = Context.ApplicationServices.GetHtmlEncoder();
+
     var errorDetail = Model.ErrorDetails;
 
     Response.StatusCode = 500;
@@ -27,7 +32,7 @@
         <h1>@Resources.ErrorPageHtml_CompilationException</h1>
         @if (Model.Options.ShowExceptionDetails)
         {
-            <div class="titleerror">@errorDetail.Error.GetType().Name: @{ Output.Write(WebUtility.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); }</div>
+            <div class="titleerror">@errorDetail.Error.GetType().Name: @{ Output.Write(_htmlEncoder.HtmlEncode(errorDetail.Error.Message).Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>")); }</div>
         }
         else
         {

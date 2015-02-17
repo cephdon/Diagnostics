@@ -1,15 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
-using Microsoft.AspNet.Http;
+using Microsoft.Framework.DependencyInjection;
 
 namespace RuntimeInfoPageSample
 {
     public class Startup
     {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddWebEncoders();
+        }
+
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRequestServices();
+
             app.UseRuntimeInfoPage();
 
             app.Run(context =>

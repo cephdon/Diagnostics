@@ -11,6 +11,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Diagnostics.Entity.Tests
 {
@@ -236,11 +238,20 @@ namespace Microsoft.AspNet.Diagnostics.Entity.Tests
             Assert.Contains(options.MigrationsEndPointPath.Value, content);
         }
 
+        private static IServiceProvider GetServiceProvider()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddDiagnostics();
+            return serviceCollection.BuildServiceProvider();
+        }
 
         private static async Task<string> ExecutePage(DatabaseErrorPageOptions options, DatabaseErrorPageModel model)
         {
             var page = new DatabaseErrorPage();
             var context = new Mock<HttpContext>();
+            context.SetupGet(o => o.ApplicationServices)
+                .Returns(GetServiceProvider());
+
             var response = new Mock<HttpResponse>();
             var stream = new MemoryStream();
 

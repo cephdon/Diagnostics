@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.WebEncoders;
 
 namespace StatusCodePagesSample
 {
@@ -15,6 +15,8 @@ namespace StatusCodePagesSample
     {
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRequestServices();
+
             app.UseErrorPage(ErrorPageOptions.ShowAll);
             app.UseStatusCodePages(); // There is a default response but any of the following can be used to change the behavior.
 
@@ -59,13 +61,14 @@ namespace StatusCodePagesSample
             {
                 error.Run(async context =>
                 {
+                    var htmlEncoder = context.ApplicationServices.GetHtmlEncoder();
                     var builder = new StringBuilder();
                     builder.AppendLine("<html><body>");
-                    builder.AppendLine("An error occurred, Status Code: " + WebUtility.HtmlEncode(context.Request.Path.ToString().Substring(1)) + "<br>");
+                    builder.AppendLine("An error occurred, Status Code: " + htmlEncoder.HtmlEncode(context.Request.Path.ToString().Substring(1)) + "<br>");
                     var referrer = context.Request.Headers["referer"];
                     if (!string.IsNullOrEmpty(referrer))
                     {
-                        builder.AppendLine("<a href=\"" + WebUtility.HtmlEncode(referrer) + "\">Retry " + WebUtility.HtmlEncode(referrer) + "</a><br>");
+                        builder.AppendLine("<a href=\"" + htmlEncoder.HtmlEncode(referrer) + "\">Retry " + htmlEncoder.HtmlEncode(referrer) + "</a><br>");
                     }
                     builder.AppendLine("</body></html>");
                     await context.Response.SendAsync(builder.ToString(), "text/html");
@@ -74,12 +77,13 @@ namespace StatusCodePagesSample
 
             app.Run(async context =>
             {
+                var htmlEncoder = context.ApplicationServices.GetHtmlEncoder();
                 // Generates the HTML with all status codes.
                 var builder = new StringBuilder();
                 builder.AppendLine("<html><body>");
                 builder.AppendLine("<a href=\"" +
-                    WebUtility.HtmlEncode(context.Request.PathBase.ToString()) + "/missingpage/\">" +
-                    WebUtility.HtmlEncode(context.Request.PathBase.ToString()) + "/missingpage/</a><br>");
+                    htmlEncoder.HtmlEncode(context.Request.PathBase.ToString()) + "/missingpage/\">" +
+                    htmlEncoder.HtmlEncode(context.Request.PathBase.ToString()) + "/missingpage/</a><br>");
 
                 var space = string.Concat(Enumerable.Repeat("&nbsp;", 12));
                 builder.AppendFormat("<br><b>{0}{1}{2}</b><br>", "Status Code", space, "Status Code Pages");
