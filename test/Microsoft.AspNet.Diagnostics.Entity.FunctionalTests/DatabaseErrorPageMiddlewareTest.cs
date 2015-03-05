@@ -239,8 +239,6 @@ namespace Microsoft.AspNet.Diagnostics.Entity.Tests
                         var contextOptions = new DbContextOptions();
                         contextOptions.UseSqlServer(database.ConnectionString);
                         services.AddInstance<DbContextOptions>(contextOptions);
-
-                        services.AddDiagnostics();
                     });
 
                     var options = DatabaseErrorPageOptions.ShowAll;
@@ -397,8 +395,6 @@ namespace Microsoft.AspNet.Diagnostics.Entity.Tests
                         options.UseSqlServer(database.ConnectionString);
 
                         services.AddInstance<DbContextOptions>(options);
-
-                        services.AddDiagnostics();
                     });
 
                     app.UseDatabaseErrorPage();
