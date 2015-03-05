@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics.Elm;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 #if ASPNET50
@@ -207,6 +208,9 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             contextMock
                 .Setup(c => c.Request.ReadFormAsync(It.IsAny<System.Threading.CancellationToken>()))
                 .Returns(Task.FromResult(new Mock<IFormCollection>().Object));
+            contextMock
+                .Setup(c => c.ApplicationServices)
+                .Returns(new ServiceCollection().BuildServiceProvider());
 
             return contextMock;
         }

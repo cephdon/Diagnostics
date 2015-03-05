@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Diagnostics.Entity.Tests
 {

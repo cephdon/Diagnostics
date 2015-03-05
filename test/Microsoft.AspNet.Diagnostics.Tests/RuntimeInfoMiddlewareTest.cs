@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Runtime;
 #if ASPNET50
 using Moq;
@@ -121,6 +121,9 @@ namespace Microsoft.AspNet.Diagnostics.Tests
                 contextMock
                     .SetupGet(c => c.Response.Body)
                     .Returns(responseStream);
+                contextMock
+                    .SetupGet(c => c.ApplicationServices)
+                    .Returns(new ServiceCollection().BuildServiceProvider());
 
                 // Act
                 await middleware.Invoke(contextMock.Object);
