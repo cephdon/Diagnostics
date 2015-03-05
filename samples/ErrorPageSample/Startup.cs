@@ -7,8 +7,6 @@ namespace ErrorPageSample
     {
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRequestServices();
-
             app.UseErrorPage();
             app.Run(context =>
             {

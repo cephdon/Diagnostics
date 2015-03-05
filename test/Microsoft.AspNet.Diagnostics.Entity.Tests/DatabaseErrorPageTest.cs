@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics.Entity.Tests
 {
@@ -246,7 +247,7 @@ namespace Microsoft.AspNet.Diagnostics.Entity.Tests
 
         private static async Task<string> ExecutePage(DatabaseErrorPageOptions options, DatabaseErrorPageModel model)
         {
-            var page = new DatabaseErrorPage();
+            var page = new DatabaseErrorPage(new HtmlEncoder());
             var context = new Mock<HttpContext>();
             context.SetupGet(o => o.ApplicationServices)
                 .Returns(GetServiceProvider());

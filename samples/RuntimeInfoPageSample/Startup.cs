@@ -7,8 +7,6 @@ namespace RuntimeInfoPageSample
     {
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRequestServices();
-
             app.UseRuntimeInfoPage();
 
             app.Run(context =>

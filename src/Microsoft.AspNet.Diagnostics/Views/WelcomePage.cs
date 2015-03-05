@@ -7,12 +7,14 @@ using System
 #line hidden
     ;
     using System.Threading.Tasks;
+    using Microsoft.Framework.WebEncoders;
 
     public class WelcomePage : Microsoft.AspNet.Diagnostics.Views.BaseView
     {
         #line hidden
-        public WelcomePage()
+        public WelcomePage(IHtmlEncoder htmlEncoder)
         {
+            HtmlEncoder = htmlEncoder;
         }
 
         #pragma warning disable 1998

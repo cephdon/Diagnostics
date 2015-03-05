@@ -11,6 +11,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.WebEncoders;
 #if ASPNET50
 using Moq;
 #endif
@@ -57,7 +58,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var pageMiddleware = new ElmPageMiddleware(
                 next,
                 optionsMock.Object,
-                elmStore);
+                elmStore,
+                htmlEncoder: new HtmlEncoder());
 
             var contextMock = GetMockContext("/nonmatchingpath");
 
@@ -94,7 +96,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var pageMiddleware = new ElmPageMiddleware(
                 next,
                 optionsMock.Object,
-                elmStore);
+                elmStore,
+                htmlEncoder: new HtmlEncoder());
             var contextMock = GetMockContext("/Elm");
 
             using (var responseStream = new MemoryStream())
@@ -139,7 +142,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var pageMiddleware = new ElmPageMiddleware(
                 next,
                 optionsMock.Object,
-                elmStore);
+                elmStore,
+                htmlEncoder: new HtmlEncoder());
             var contextMock = GetMockContext("/Elm/666");
 
             using (var responseStream = new MemoryStream())
@@ -208,9 +212,6 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             contextMock
                 .Setup(c => c.Request.ReadFormAsync(It.IsAny<System.Threading.CancellationToken>()))
                 .Returns(Task.FromResult(new Mock<IFormCollection>().Object));
-            contextMock
-                .Setup(c => c.ApplicationServices)
-                .Returns(new ServiceCollection().BuildServiceProvider());
 
             return contextMock;
         }

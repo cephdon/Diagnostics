@@ -9,6 +9,7 @@ using Microsoft.AspNet.Diagnostics.Elm.Views;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 using System.Linq;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics.Elm
 {
@@ -20,12 +21,14 @@ namespace Microsoft.AspNet.Diagnostics.Elm
         private readonly RequestDelegate _next;
         private readonly ElmOptions _options;
         private readonly ElmStore _store;
+        private readonly IHtmlEncoder _htmlEncoder;
 
-        public ElmPageMiddleware(RequestDelegate next, IOptions<ElmOptions> options, ElmStore store)
+        public ElmPageMiddleware(RequestDelegate next, IOptions<ElmOptions> options, ElmStore store, IHtmlEncoder htmlEncoder)
         {
             _next = next;
             _options = options.Options;
             _store = store;
+            _htmlEncoder = htmlEncoder;
         }
 
         public async Task Invoke(HttpContext context)
@@ -61,7 +64,7 @@ namespace Microsoft.AspNet.Diagnostics.Elm
                 Options = options,
                 Path = _options.Path
             };
-            var logPage = new LogPage(model);
+            var logPage = new LogPage(model, _htmlEncoder);
 
             await logPage.ExecuteAsync(context);
         }
@@ -81,7 +84,7 @@ namespace Microsoft.AspNet.Diagnostics.Elm
                 Activity = _store.GetActivities().Where(a => a.Id == id).FirstOrDefault(),
                 Options = options
             };
-            var detailsPage = new DetailsPage(model);
+            var detailsPage = new DetailsPage(model, _htmlEncoder);
             await detailsPage.ExecuteAsync(context);
         }
 

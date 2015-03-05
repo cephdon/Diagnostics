@@ -6,8 +6,6 @@ namespace WelcomePageSample
     {
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRequestServices();
-
             app.UseWelcomePage();
         }
     }

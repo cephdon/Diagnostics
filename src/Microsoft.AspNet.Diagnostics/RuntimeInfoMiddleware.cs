@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics.Views;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.Runtime;
-using System.Linq;
-using System.Reflection;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics
 {
@@ -20,6 +19,7 @@ namespace Microsoft.AspNet.Diagnostics
         private readonly RequestDelegate _next;
         private readonly RuntimeInfoPageOptions _options;
         private readonly ILibraryManager _libraryManager;
+        private readonly IHtmlEncoder _htmlEncoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeInfoMiddleware"/> class
@@ -29,11 +29,13 @@ namespace Microsoft.AspNet.Diagnostics
         public RuntimeInfoMiddleware(
             [NotNull] RequestDelegate next,
             [NotNull] RuntimeInfoPageOptions options,
-            [NotNull] ILibraryManager libraryManager)
+            [NotNull] ILibraryManager libraryManager,
+            [NotNull] IHtmlEncoder htmlEncoder)
         {
             _next = next;
             _options = options;
             _libraryManager = libraryManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace Microsoft.AspNet.Diagnostics
             if (!_options.Path.HasValue || _options.Path == request.Path)
             {
                 var model = CreateRuntimeInfoModel();
-                var runtimeInfoPage = new RuntimeInfoPage(model);
+                var runtimeInfoPage = new RuntimeInfoPage(model, _htmlEncoder);
                 return runtimeInfoPage.ExecuteAsync(context);
             }
 

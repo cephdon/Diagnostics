@@ -43,6 +43,7 @@ using Microsoft.Framework.Logging
 #line hidden
     ;
     using System.Threading.Tasks;
+    using Microsoft.Framework.WebEncoders;
 
     public class DetailsPage : Microsoft.AspNet.Diagnostics.Views.BaseView
     {
@@ -223,7 +224,7 @@ WriteTo(__razor_helper_writer, Traverse(node.Children[i]));
 
 #line 10 "DetailsPage.cshtml"
 
-    public DetailsPage(DetailsPageModel model)
+    public DetailsPage(DetailsPageModel model, IHtmlEncoder htmlEncoder) : this(htmlEncoder)
     {
         Model = model;
     }
@@ -233,8 +234,9 @@ WriteTo(__razor_helper_writer, Traverse(node.Children[i]));
 #line default
 #line hidden
         #line hidden
-        public DetailsPage()
+        public DetailsPage(IHtmlEncoder htmlEncoder)
         {
+            HtmlEncoder = htmlEncoder;
         }
 
         #pragma warning disable 1998

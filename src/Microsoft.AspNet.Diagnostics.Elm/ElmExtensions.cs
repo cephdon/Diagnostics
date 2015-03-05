@@ -7,6 +7,7 @@ using Microsoft.AspNet.Diagnostics.Elm;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -31,7 +32,7 @@ namespace Microsoft.AspNet.Builder
         /// </summary>
         public static IApplicationBuilder UseElmPage([NotNull] this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<ElmPageMiddleware>();
+            return builder.UseMiddleware<ElmPageMiddleware>(builder.ApplicationServices.GetHtmlEncoder());
         }
 
        /// <summary>

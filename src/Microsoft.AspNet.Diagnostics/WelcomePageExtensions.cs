@@ -5,6 +5,7 @@
 using System;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Diagnostics;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -26,7 +27,7 @@ namespace Microsoft.AspNet.Builder
                 throw new ArgumentNullException("builder");
             }
 
-            return builder.Use(next => new WelcomePageMiddleware(next, options).Invoke);
+            return builder.UseMiddleware<WelcomePageMiddleware>(options, builder.ApplicationServices.GetHtmlEncoder());
         }
 
         /// <summary>

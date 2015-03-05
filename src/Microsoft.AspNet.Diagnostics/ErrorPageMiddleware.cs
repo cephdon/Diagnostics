@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics.Views;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics
 {
@@ -23,6 +24,7 @@ namespace Microsoft.AspNet.Diagnostics
         private readonly RequestDelegate _next;
         private readonly ErrorPageOptions _options;
         private static bool IsMono = Type.GetType("Mono.Runtime") != null;
+        private readonly IHtmlEncoder _htmlEncoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorPageMiddleware"/> class
@@ -30,7 +32,7 @@ namespace Microsoft.AspNet.Diagnostics
         /// <param name="next"></param>
         /// <param name="options"></param>
         /// <param name="isDevMode"></param>
-        public ErrorPageMiddleware(RequestDelegate next, ErrorPageOptions options, bool isDevMode)
+        public ErrorPageMiddleware(RequestDelegate next, ErrorPageOptions options, bool isDevMode, IHtmlEncoder htmlEncoder)
         {
             if (next == null)
             {
@@ -46,6 +48,7 @@ namespace Microsoft.AspNet.Diagnostics
             }
             _next = next;
             _options = options;
+            _htmlEncoder = htmlEncoder;
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace Microsoft.AspNet.Diagnostics
                 }
             }
 
-            var errorPage = new CompilationErrorPage
+            var errorPage = new CompilationErrorPage(_htmlEncoder)
             {
                 Model = model
             };
@@ -169,7 +172,7 @@ namespace Microsoft.AspNet.Diagnostics
                 model.Environment = context;
             }*/
 
-            var errorPage = new ErrorPage(model);
+            var errorPage = new ErrorPage(model, _htmlEncoder);
             return errorPage.ExecuteAsync(context);
         }
 

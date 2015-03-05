@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.AspNet.Diagnostics;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -44,7 +45,7 @@ namespace Microsoft.AspNet.Builder
             string appMode = new AppProperties(builder.Properties).Get<string>(Constants.HostAppMode);
             bool isDevMode = string.Equals(Constants.DevMode, appMode, StringComparison.Ordinal);*/
             bool isDevMode = true;
-            return builder.Use(next => new ErrorPageMiddleware(next, options, isDevMode).Invoke);
+            return builder.UseMiddleware<ErrorPageMiddleware>(options, isDevMode, builder.ApplicationServices.GetHtmlEncoder());
         }
     }
 }

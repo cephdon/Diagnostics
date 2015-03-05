@@ -1,6 +1,9 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics.Entity.Utilities;
@@ -9,13 +12,10 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.RequestContainer;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Relational;
 using Microsoft.Data.Entity.Relational.Migrations;
 using Microsoft.Framework.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics.Entity
 {
@@ -26,8 +26,14 @@ namespace Microsoft.AspNet.Diagnostics.Entity
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly DataStoreErrorLoggerProvider _loggerProvider;
+        private readonly IHtmlEncoder _htmlEncoder;
 
-        public DatabaseErrorPageMiddleware([NotNull] RequestDelegate next, [NotNull] IServiceProvider serviceProvider, [NotNull] ILoggerFactory loggerFactory, [NotNull] DatabaseErrorPageOptions options)
+        public DatabaseErrorPageMiddleware(
+            [NotNull] RequestDelegate next, 
+            [NotNull] IServiceProvider serviceProvider, 
+            [NotNull] ILoggerFactory loggerFactory, 
+            [NotNull] DatabaseErrorPageOptions options,
+            [NotNull] IHtmlEncoder htmlEncoder)
         {
             Check.NotNull(next, "next");
             Check.NotNull(serviceProvider, "serviceProvider");
@@ -38,6 +44,7 @@ namespace Microsoft.AspNet.Diagnostics.Entity
             _serviceProvider = serviceProvider;
             _options = options;
             _logger = loggerFactory.CreateLogger<DatabaseErrorPageMiddleware>();
+            _htmlEncoder = htmlEncoder;
 
             _loggerProvider = new DataStoreErrorLoggerProvider();
             loggerFactory.AddProvider(_loggerProvider);
@@ -91,7 +98,7 @@ namespace Microsoft.AspNet.Diagnostics.Entity
 
                                     if ((!databaseExists && pendingMigrations.Any()) || pendingMigrations.Any() || pendingModelChanges)
                                     {
-                                        var page = new DatabaseErrorPage();
+                                        var page = new DatabaseErrorPage(_htmlEncoder);
                                         page.Model = new DatabaseErrorPageModel(dbContextType, ex, databaseExists, pendingModelChanges, pendingMigrations, _options);
                                         await page.ExecuteAsync(context).WithCurrentCulture();
                                         return;

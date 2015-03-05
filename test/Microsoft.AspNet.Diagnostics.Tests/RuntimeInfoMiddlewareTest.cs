@@ -11,6 +11,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.WebEncoders;
 #if ASPNET50
 using Moq;
 #endif
@@ -53,7 +54,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var middleware = new RuntimeInfoMiddleware(
                 next,
                 new RuntimeInfoPageOptions(),
-                libraryManagerMock.Object);
+                libraryManagerMock.Object,
+                new HtmlEncoder());
 
             // Act
             var model = middleware.CreateRuntimeInfoModel();
@@ -77,7 +79,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var middleware = new RuntimeInfoMiddleware(
                next,
                new RuntimeInfoPageOptions(),
-               libraryManagerMock.Object);
+               libraryManagerMock.Object,
+               new HtmlEncoder());
 
             var contextMock = new Mock<HttpContext>(MockBehavior.Strict);
             contextMock
@@ -109,7 +112,8 @@ namespace Microsoft.AspNet.Diagnostics.Tests
             var middleware = new RuntimeInfoMiddleware(
                 next,
                 new RuntimeInfoPageOptions(),
-                libraryManagerMock.Object);
+                libraryManagerMock.Object,
+                new HtmlEncoder());
 
             var buffer = new byte[4096];
             using (var responseStream = new MemoryStream(buffer))

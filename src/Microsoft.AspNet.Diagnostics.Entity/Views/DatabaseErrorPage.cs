@@ -35,6 +35,7 @@ using Microsoft.AspNet.Diagnostics.Entity.Views
 #line hidden
     ;
     using System.Threading.Tasks;
+    using Microsoft.Framework.WebEncoders;
 
     public class DatabaseErrorPage : Microsoft.AspNet.Diagnostics.Views.BaseView
     {
@@ -57,8 +58,9 @@ using Microsoft.AspNet.Diagnostics.Entity.Views
 #line default
 #line hidden
         #line hidden
-        public DatabaseErrorPage()
+        public DatabaseErrorPage([NotNull] IHtmlEncoder htmlEncoder)
         {
+            HtmlEncoder = htmlEncoder;
         }
 
         #pragma warning disable 1998

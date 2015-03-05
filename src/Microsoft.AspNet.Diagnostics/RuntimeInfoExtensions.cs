@@ -4,6 +4,7 @@
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -24,7 +25,8 @@ namespace Microsoft.AspNet.Builder
             [NotNull] RuntimeInfoPageOptions options)
         {
             var libraryManager = builder.ApplicationServices.GetService(typeof(ILibraryManager)) as ILibraryManager;
-            return builder.Use(next => new RuntimeInfoMiddleware(next, options, libraryManager).Invoke);
+            var htmlEncoder = builder.ApplicationServices.GetHtmlEncoder();
+            return builder.UseMiddleware<RuntimeInfoMiddleware>(options, libraryManager, htmlEncoder);
         }
     }
 }

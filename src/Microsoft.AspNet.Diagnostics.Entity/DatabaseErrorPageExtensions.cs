@@ -4,6 +4,7 @@
 using JetBrains.Annotations;
 using Microsoft.AspNet.Diagnostics.Entity;
 using Microsoft.AspNet.Diagnostics.Entity.Utilities;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -21,9 +22,9 @@ namespace Microsoft.AspNet.Builder
             Check.NotNull(builder, "builder");
             Check.NotNull(options, "options");
 
-            builder = builder.UseMiddleware<DatabaseErrorPageMiddleware>(options);
+            builder = builder.UseMiddleware<DatabaseErrorPageMiddleware>(options, builder.ApplicationServices.GetHtmlEncoder());
 
-            if(options.EnableMigrationCommands)
+            if (options.EnableMigrationCommands)
             {
                 builder.UseMigrationsEndPoint(new MigrationsEndPointOptions { Path = options.MigrationsEndPointPath });
             }

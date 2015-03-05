@@ -49,6 +49,7 @@ using Microsoft.Framework.Logging
 #line hidden
     ;
     using System.Threading.Tasks;
+    using Microsoft.Framework.WebEncoders;
 
     public class LogPage : Microsoft.AspNet.Diagnostics.Views.BaseView
     {
@@ -289,7 +290,7 @@ WriteTo(__razor_helper_writer, LogRow(new LogInfo()
 
 #line 11 "LogPage.cshtml"
 
-    public LogPage(LogPageModel model)
+    public LogPage(LogPageModel model, IHtmlEncoder htmlEncoder) : this(htmlEncoder)
     {
         Model = model;
     }
@@ -299,8 +300,9 @@ WriteTo(__razor_helper_writer, LogRow(new LogInfo()
 #line default
 #line hidden
         #line hidden
-        public LogPage()
+        public LogPage(IHtmlEncoder htmlEncoder)
         {
+            HtmlEncoder = htmlEncoder;
         }
 
         #pragma warning disable 1998

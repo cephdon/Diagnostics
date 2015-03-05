@@ -51,7 +51,6 @@ namespace Microsoft.AspNet.Diagnostics.Views
             Request = Context.Request;
             Response = Context.Response;
             Output = new StreamWriter(Response.Body);
-            HtmlEncoder = context.ApplicationServices.GetHtmlEncoder();
             await ExecuteAsync();
             Output.Dispose();
         }

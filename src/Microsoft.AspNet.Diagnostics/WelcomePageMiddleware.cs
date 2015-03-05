@@ -3,11 +3,11 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Diagnostics.Views;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Diagnostics.Views;
 using Microsoft.AspNet.Http;
+using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.AspNet.Diagnostics
 {
@@ -18,13 +18,14 @@ namespace Microsoft.AspNet.Diagnostics
     {
         private readonly RequestDelegate _next;
         private readonly WelcomePageOptions _options;
+        private readonly IHtmlEncoder _htmlEncoder;
 
         /// <summary>
         /// Creates a default web page for new applications.
         /// </summary>
         /// <param name="next"></param>
         /// <param name="options"></param>
-        public WelcomePageMiddleware(RequestDelegate next, WelcomePageOptions options)
+        public WelcomePageMiddleware(RequestDelegate next, WelcomePageOptions options, IHtmlEncoder htmlEncoder)
         {
             if (next == null)
             {
@@ -37,6 +38,7 @@ namespace Microsoft.AspNet.Diagnostics
 
             _next = next;
             _options = options;
+            _htmlEncoder = htmlEncoder;
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace Microsoft.AspNet.Diagnostics
             if (!_options.Path.HasValue || _options.Path == request.Path)
             {
                 // Dynamically generated for LOC.
-                var welcomePage = new WelcomePage();
+                var welcomePage = new WelcomePage(_htmlEncoder);
                 return welcomePage.ExecuteAsync(context);
             }
 

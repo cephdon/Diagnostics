@@ -31,6 +31,7 @@ using Views
 #line hidden
     ;
     using System.Threading.Tasks;
+    using Microsoft.Framework.WebEncoders;
 
     public class CompilationErrorPage : Microsoft.AspNet.Diagnostics.Views.BaseView
     {
@@ -41,8 +42,9 @@ using Views
 #line default
 #line hidden
         #line hidden
-        public CompilationErrorPage()
+        public CompilationErrorPage(IHtmlEncoder htmlEncoder)
         {
+            HtmlEncoder = htmlEncoder;
         }
 
         #pragma warning disable 1998
