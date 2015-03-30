@@ -8,59 +8,42 @@
 
 @functions
 {
-    public DetailsPage(DetailsPageModel model)
+    public DetailsPage(DetailsPageModelNew model)
     {
         Model = model;
     }
 
-    public DetailsPageModel Model { get; set; }
+    public DetailsPageModelNew Model { get; set; }
 }
 
-@helper LogRow(LogInfo log)
+@helper LogRow(MessageNode messageNode)
 {
-    if (log.Severity >= Model.Options.MinLevel &&
-        (string.IsNullOrEmpty(Model.Options.NamePrefix) || log.Name.StartsWith(Model.Options.NamePrefix, StringComparison.Ordinal)))
-    {
+        if (messageNode.Severity >= Model.Options.MinLevel &&
+            (string.IsNullOrEmpty(Model.Options.NamePrefix) || messageNode.Name.StartsWith(Model.Options.NamePrefix, StringComparison.Ordinal)))
+        {
         <tr>
-            <td>@string.Format("{0:MM/dd/yy}", log.Time)</td>
-            <td>@string.Format("{0:H:mm:ss}", log.Time)</td>
-            <td class="@log.Severity.ToString().ToLowerInvariant()">@log.Severity</td>
-            <td title="@log.Name">@log.Name</td>
-            <td title="@log.Message" class="logState" width="100px">@log.Message</td>
-            <td title="@log.Exception">@log.Exception</td>
+            <td>@string.Format("{0:MM/dd/yy}", messageNode.Time)</td>
+            <td>@string.Format("{0:H:mm:ss}", messageNode.Time)</td>
+            <td class="@messageNode.Severity.ToString().ToLowerInvariant()">@messageNode.Severity</td>
+            <td title="@messageNode.Name">@messageNode.Name</td>
+            <td title="@messageNode.Message" class="logState" width="100px">@messageNode.Message</td>
+            <td title="@messageNode.Exception">@messageNode.Exception</td>
         </tr>
     }
 }
 
-@helper Traverse(ScopeNode node)
+@helper Traverse(LogNode node)
 {
-    var messageIndex = 0;
-    var childIndex = 0;
-    while (messageIndex < node.Messages.Count && childIndex < node.Children.Count)
+    var scopeNode = node as ScopeNodeNew;
+    if(scopeNode == null)
     {
-        if (node.Messages[messageIndex].Time < node.Children[childIndex].StartTime)
-        {
-            @LogRow(node.Messages[messageIndex])
-            messageIndex++;
-        }
-        else
-        {
-            @Traverse(node.Children[childIndex])
-            childIndex++;
-        }
-    }
-    if (messageIndex < node.Messages.Count)
-    {
-        for (var i = messageIndex; i < node.Messages.Count; i++)
-        {
-            @LogRow(node.Messages[i])
-        }
+        @LogRow(node)
     }
     else
     {
-        for (var i = childIndex; i < node.Children.Count; i++)
+        foreach(var childNode in scopeNode.Children)
         {
-            @Traverse(node.Children[i])
+            @Traverse(childNode)
         }
     }
 }
