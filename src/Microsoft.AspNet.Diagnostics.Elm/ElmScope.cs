@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Threading;
 #endif
 using Microsoft.Framework.Internal;
+using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Diagnostics.Elm
 {
@@ -67,10 +68,22 @@ namespace Microsoft.AspNet.Diagnostics.Elm
             Current = scope;
             Current.Parent = temp;
 
+            // Get the scope message
+            string scopeMessage = null;
+            var scopeLogValues = Current._state as ILogValues;
+            if(scopeLogValues != null)
+            {
+                scopeMessage = scopeLogValues.Format();
+            }
+            else
+            {
+                scopeMessage = Current._state.ToString();
+            }
+
             Current.Node = new ScopeNode()
             {
                 StartTime = DateTimeOffset.UtcNow,
-                State = Current._state,
+                State = scopeMessage,
                 Name = Current._name
             };
 
