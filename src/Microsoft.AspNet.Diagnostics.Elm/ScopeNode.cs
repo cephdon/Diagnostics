@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Diagnostics.Elm
 
         public DateTimeOffset EndTime { get; set; }
 
-        public object State { get; set; }
+        public string State { get; set; }
 
         public string Name { get; set; }
 
